@@ -34,23 +34,10 @@ CMyArray<T>::CMyArray()
 template <class T>
 void CMyArray<T>::Add(const T & item)
 {
-
-
-
-	//T *tempStr = new T[m_size + sizeof(item)];
-
-	//memcpy(tempStr, m_array, m_size);
-	//memcpy(&tempStr[m_size], str.m_pChars, str.m_length);
-
-	//m_length = m_length + str.m_length;
-
-	//delete[] m_array;
-	//m_array = tempStr;
 	++m_size;
 	try
 	{
-		//m_array = (T *)realloc(*m_array, sizeof(item) * m_size);
-		m_array = new T[sizeof(item) * m_size]();
+		m_array = (T *)realloc(m_array, sizeof(T) * m_size * 2);
 	}
 	catch (...)
 	{

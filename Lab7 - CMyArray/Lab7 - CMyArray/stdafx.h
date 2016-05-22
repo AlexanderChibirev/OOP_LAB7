@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <tchar.h>
+#include <cstdlib> 
 #include <string>
 #include <iostream>
 #include <memory>
