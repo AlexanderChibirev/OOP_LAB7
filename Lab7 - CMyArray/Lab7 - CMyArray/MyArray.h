@@ -18,7 +18,7 @@ public:
 	void Clear(); 
 	//void Delete(unsigned int pos); 
 private:
-	T *m_array; 
+	T * m_array; 
 	size_t m_size;  
 };
 
@@ -34,29 +34,22 @@ CMyArray<T>::CMyArray()
 template <class T>
 void CMyArray<T>::Add(const T & item)
 {
-
-
-
-	//T *tempStr = new T[m_size + sizeof(item)];
-
-	//memcpy(tempStr, m_array, m_size);
-	//memcpy(&tempStr[m_size], str.m_pChars, str.m_length);
-
-	//m_length = m_length + str.m_length;
-
-	//delete[] m_array;
-	//m_array = tempStr;
 	++m_size;
 	try
 	{
-		//m_array = (T *)realloc(*m_array, sizeof(item) * m_size);
-		m_array = new T[sizeof(item) * m_size]();
+			auto buffer = m_array;
+		m_array = new T[m_size];
+		for (size_t i = 0; i < m_size - 1; ++i)
+		{
+			m_array[i] = buffer[i];
+		}
+		m_array[m_size - 1] = item;
+		delete [] buffer;
 	}
 	catch (...)
 	{
 		throw  std::bad_alloc();
 	}
-	m_array[m_size - 1] = item;
 }
 
 template <class T>

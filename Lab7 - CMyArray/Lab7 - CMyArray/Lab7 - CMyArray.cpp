@@ -22,12 +22,14 @@ int main(void)
 	//array.Add("asdasd");
 	//array.Add("asdasd");
 //	array.Add("asdasd");
-	CMyArray<string> array /*= { 20 }*/;
-	array.Add("34");
-	array.Add("14");
+	CMyArray<int> array /*= { 20 }*/;
+	array.Add(34);
+	array.Add(14);
+	auto xd = array[0];
+	xd = array[1];
 	//array.Add(24);
 	//array.Add(234);
 	//array.Add(1234);
-	auto xd = array[3];
+	// = array[3];
 	return 0;
 }
