@@ -35,7 +35,7 @@
     <ClCompile Include="main_tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CMyArray_tests.cpp">
+    <ClCompile Include="MyArray_tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

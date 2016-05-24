@@ -6,12 +6,12 @@ class CMyArray
 public:
 	CMyArray();
 	CMyArray(std::initializer_list< T> list);  
-	//CMyArray(const CMyArray &a);
-	//~CMyArray(); 
+	CMyArray(const CMyArray &a);
+	~CMyArray(); 
 	//CMyArray& operator = (const CMyArray &a); 
 	//CMyArray& operator = (CMyArray &&rhs);
 	T& operator [] (size_t index);  
-
+	const T&  operator [] (size_t index) const;
 	void Add(const T &item);  
 	size_t GetSize(); 
 	void Resize(size_t newsize);
@@ -37,8 +37,8 @@ void CMyArray<T>::Add(const T & item)
 	++m_size;
 	try
 	{
-			auto buffer = m_array;
-		m_array = new T[m_size];
+		auto buffer = m_array;
+		m_array = new T[sizeof(T)*m_size];
 		for (size_t i = 0; i < m_size - 1; ++i)
 		{
 			m_array[i] = buffer[i];
@@ -61,31 +61,34 @@ CMyArray<T>::CMyArray(std::initializer_list<T> list)
 		Add(it);
 	}
 }
-//
-//
-//template <class T>
-//CMyArray<T>::~CMyArray()
-//{
-//	if (m_array)
-//	{
-//		free(m_array); // Freeing memory  
-//		m_array = nullptr;
-//	}
-//}
-//
-//
-//template <class T>
-//CMyArray<T>::CMyArray(const CMyArray &a)
-//{
-//	m_array = (T *)malloc(sizeof(T)*a.m_realsize);
-//	if (m_array == nullptr)
-//		throw std::bad_alloc();
-//
-//	memcpy(m_array, a.m_array, sizeof(T)*a.m_realsize);
-//	// memcpy call -- coping memory contents  
-//	m_realsize = a.m_realsize;
-//	m_size = a.m_size;
-//}
+
+
+template <class T>
+CMyArray<T>::~CMyArray()
+{
+	if (m_array)
+	{
+		//free(m_array); // Freeing memory  
+		m_array = nullptr;
+	}
+}
+
+
+template <class T>
+CMyArray<T>::CMyArray(const CMyArray &a)
+{
+	try
+	{
+		m_array = new T[sizeof(T)*a.m_size];
+		memcpy(m_array, a.m_array, sizeof(T)*a.m_size);
+		m_size = a.m_size;
+	//	a.Clear();
+	}
+	catch(...)
+	{
+		throw  std::bad_alloc();
+	}
+}
 //
 //template <class T>
 //CMyArray<T>& CMyArray<T>::operator=(CMyArray const &rhs)//CMyArray rhs
@@ -169,6 +172,21 @@ void CMyArray<T>::Clear() // clear array memory
 
 template <class T>
 T& CMyArray<T>::operator [] (size_t index)
+{
+	if (index > m_size)
+	{
+		throw  std::out_of_range("index out of range");
+	}
+	//else if (!m_array)
+	//{
+	//	m_array = new T(0);
+	//	m_array[1] = '\0';
+	//}
+	return m_array[index];
+}
+
+template <class T>
+const T& CMyArray<T>::operator [] (size_t index) const
 {
 	if (index > m_size)
 	{

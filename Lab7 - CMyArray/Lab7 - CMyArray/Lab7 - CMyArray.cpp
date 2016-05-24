@@ -23,10 +23,16 @@ int main(void)
 	//array.Add("asdasd");
 //	array.Add("asdasd");
 	CMyArray<int> array /*= { 20 }*/;
-	array.Add(34);
-	array.Add(14);
-	auto xd = array[0];
-	xd = array[1];
+	array.Add(23);
+	//array.Add(34);
+	//array.Add(14);
+	///auto a1 = array[0];
+//	auto a2 = array[1];
+	//CMyArray<int> array2 /*= { 20 }*/;
+	//array2 = array;
+	//a1 = array2[0];
+	//a2 = array2[1];
+
 	//array.Add(24);
 	//array.Add(234);
 	//array.Add(1234);

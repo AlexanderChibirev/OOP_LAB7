@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C5A3A7C7-92A6-462A-B43B-29E2BECDC553}</ProjectGuid>
+    <ProjectGuid>{8CFC584F-B6BD-4CE3-AEED-2AADDE9087D6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>main_tests</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -93,10 +93,6 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>"$(TargetPath)" --log_level=test_suite</Command>
     </PostBuildEvent>
@@ -113,10 +109,6 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>"$(TargetPath)" --log_level=test_suite</Command>
     </PostBuildEvent>
@@ -137,10 +129,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>"$(TargetPath)" --log_level=test_suite</Command>
     </PostBuildEvent>
@@ -161,10 +149,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>"$(TargetPath)" --log_level=test_suite</Command>
     </PostBuildEvent>
@@ -178,8 +162,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CMyArray_tests.cpp" />
     <ClCompile Include="main_tests.cpp" />
+    <ClCompile Include="MyArray_tests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
