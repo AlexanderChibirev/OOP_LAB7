@@ -42,4 +42,18 @@ BOOST_AUTO_TEST_CASE(can_return_max_string_for_string)
 	BOOST_CHECK(FindMax(arr, maxLenghtStr, [](string const & lhs, string const &  rhs) {return lhs.length() < rhs.length(); }));
 	BOOST_CHECK_EQUAL(maxLenghtStr, "words");
 }
+
+BOOST_AUTO_TEST_CASE(then_lambda_return_exeption)
+{
+	int maxValue = 0;
+	vector<int> arr = { 1, 2, -1, 1, 2, 1, 222 };
+	int x = 0;
+	auto less = [&x](int lhs, int rhs) {
+		++x;
+		if (x == 3) { throw std::invalid_argument("invalid_argument"); }
+		return lhs < rhs; };
+	BOOST_CHECK_THROW(FindMax(arr, maxValue, less), std::invalid_argument);
+	BOOST_CHECK_EQUAL(maxValue, 0);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
