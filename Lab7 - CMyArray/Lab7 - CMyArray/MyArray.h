@@ -1,5 +1,8 @@
 #pragma once
 #include <cstdlib> 
+#include <memory>
+using namespace std;
+
 template<class T>
 class CMyArray
 {
@@ -7,7 +10,6 @@ public:
 	CMyArray();
 	CMyArray(std::initializer_list< T> list);  
 	CMyArray(const CMyArray &a);
-	~CMyArray(); 
 	//CMyArray& operator = (const CMyArray &a); 
 	//CMyArray& operator = (CMyArray &&rhs);
 	T& operator [] (size_t index);  
@@ -18,7 +20,7 @@ public:
 	void Clear(); 
 	//void Delete(unsigned int pos); 
 private:
-	T * m_array; 
+	std::unique_ptr<T[]> m_array; 
 	size_t m_size;  
 };
 
@@ -37,14 +39,13 @@ void CMyArray<T>::Add(const T & item)
 	++m_size;
 	try
 	{
-		auto buffer = m_array;
-		m_array = new T[sizeof(T)*m_size];
+		auto buffer = m_array.release();
+		m_array = std::make_unique<T[]>(m_size);
 		for (size_t i = 0; i < m_size - 1; ++i)
 		{
 			m_array[i] = buffer[i];
 		}
 		m_array[m_size - 1] = item;
-		delete [] buffer;
 	}
 	catch (...)
 	{
@@ -62,33 +63,23 @@ CMyArray<T>::CMyArray(std::initializer_list<T> list)
 	}
 }
 
-
-template <class T>
-CMyArray<T>::~CMyArray()
-{
-	if (m_array)
-	{
-		//free(m_array); // Freeing memory  
-		m_array = nullptr;
-	}
-}
-
-
-template <class T>
-CMyArray<T>::CMyArray(const CMyArray &a)
-{
-	try
-	{
-		m_array = new T[sizeof(T)*a.m_size];
-		memcpy(m_array, a.m_array, sizeof(T)*a.m_size);
-		m_size = a.m_size;
-	//	a.Clear();
-	}
-	catch(...)
-	{
-		throw  std::bad_alloc();
-	}
-}
+//
+//template <class T>
+//CMyArray<T>::CMyArray(const CMyArray &a)
+//{
+//	try
+//	{
+//		delete[] m_array;
+//		m_array = new T[sizeof(T)*a.m_size];
+//		memcpy(m_array, a.m_array, sizeof(T)*a.m_size);
+//		m_size = a.m_size;
+//	//	a.Clear();
+//	}
+//	catch(...)
+//	{
+//		throw  std::bad_alloc();
+//	}
+//}
 //
 //template <class T>
 //CMyArray<T>& CMyArray<T>::operator=(CMyArray const &rhs)//CMyArray rhs
@@ -121,23 +112,22 @@ unsigned int CMyArray<T>::GetSize()
 {
 	return m_size; // simply return size 
 }
-//
-//
+
 template <class T>
 void CMyArray<T>::Resize(size_t newSize)
 {
 	if (newSize != 0)
 	{
-		// change array memory size  
-		// if new size is larger than current  
-		// or new size is less then half of the current  
 		if ((m_size < newSize) || (m_size > newSize / 2))
 		{
+		
+			auto buffer = m_array.release();
+			m_array = make_unique<T[]>(newSize);
+			for (size_t i = 0; i < m_size - 1; ++i)
+			{
+				m_array[i] = buffer[i];
+			}
 			m_size = newSize;
-			m_array = (T *)realloc(m_array, sizeof(T)*m_size);
-
-			if (m_array == nullptr)
-				throw  std::bad_alloc();
 		}
 	}
 	else 
@@ -145,7 +135,7 @@ void CMyArray<T>::Resize(size_t newSize)
 		Clear();
 	}		
 }
-//
+
 //template <class T>
 //void CMyArray<T>::Delete(unsigned int pos)
 //{
@@ -166,8 +156,7 @@ template <class T>
 void CMyArray<T>::Clear() // clear array memory  
 {
 	m_size = 0;
-	delete[] m_array;
-	m_array = nullptr;
+	m_array.reset();
 }
 
 template <class T>
