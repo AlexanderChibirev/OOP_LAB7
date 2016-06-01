@@ -22,11 +22,8 @@ int main(void)
 	//array.Add("asdasd");
 	//array.Add("asdasd");
 //	array.Add("asdasd");
-	CMyArray<int> array /*= { 20 }*/;
-	if(array.GetSize() == 0)
-	{
-		cout << "allok";
-	}
+	CMyArray<int> arr = { 12 };
+	CMyArray<int> arr1(move(arr));
 	//array.Add(23);
 	//array.Add(34);
 	//array.Add(14);

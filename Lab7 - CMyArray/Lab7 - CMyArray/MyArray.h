@@ -1,223 +1,184 @@
 #pragma once
-#include <cstdlib> 
 #include <memory>
-using namespace std;
+#include <iostream>
+#include <iterator>
+#include <initializer_list>
 
-template<class T>
+template <typename T>
 class CMyArray
 {
 public:
 	CMyArray();
-	CMyArray(std::initializer_list< T> list);  
-	CMyArray(const CMyArray &a);
-	//CMyArray& operator = (const CMyArray &a); 
-	//CMyArray& operator = (CMyArray &&rhs);
-	T& operator [] (size_t index);  
-	const T&  operator [] (size_t index) const;
-	void Add(const T &item);  
-	size_t GetSize(); 
-	void Resize(size_t newsize);
-	void Clear(); 
-	//void Delete(unsigned int pos); 
+	CMyArray(std::initializer_list<T> list);
+	CMyArray(const CMyArray<T> & other);
+	CMyArray(CMyArray<T> && other);
+
+	void PushBack(const T & item);
+	size_t GetSize() const;
+	T & operator [](size_t index);
+	const T & operator [] (size_t index) const;
+	void Resize(size_t newSize);
+	void Resize(size_t newSize, T item);
+	void Clear();
+	CMyArray & operator = (const CMyArray &rhs); 
+	CMyArray& operator = (CMyArray &&rhs);
 private:
-	std::unique_ptr<T[]> m_array; 
-	size_t m_size;  
+	size_t m_size = 0;
+	std::unique_ptr<T[]> m_array;
 };
 
-////////////////////////////////////////////////////////////////////// 
-
-template <class T>
+template <typename T>
 CMyArray<T>::CMyArray()
-	: m_size(0)
 {
 
 }
 
-template <class T>
-void CMyArray<T>::Add(const T & item)
+template <typename T>
+CMyArray<T>::CMyArray(CMyArray<T> && other)
+	: m_size(other.m_size)
 {
-	++m_size;
-	try
-	{
-		auto buffer = m_array.release();
-		m_array = std::make_unique<T[]>(m_size);
-		for (size_t i = 0; i < m_size - 1; ++i)
-		{
-			m_array[i] = buffer[i];
-		}
-		m_array[m_size - 1] = item;
-	}
-	catch (...)
-	{
-		throw  std::bad_alloc();
-	}
+	m_array.swap(other.m_array);
+	other.m_size = 0;
 }
 
-template <class T>
+template <typename T>
 CMyArray<T>::CMyArray(std::initializer_list<T> list)
-	: m_size(0)
+	: m_size(list.size())
+	, m_array(std::make_unique<T[]>(m_size))
 {
-	for (auto &it : list)
+	size_t i = 0;
+	for (auto it : list)
 	{
-		Add(it);
+		//PushBack(it);
+		m_array[i] = it;
+		++i;
 	}
 }
 
-//
-//template <class T>
-//CMyArray<T>::CMyArray(const CMyArray &a)
-//{
-//	try
-//	{
-//		delete[] m_array;
-//		m_array = new T[sizeof(T)*a.m_size];
-//		memcpy(m_array, a.m_array, sizeof(T)*a.m_size);
-//		m_size = a.m_size;
-//	//	a.Clear();
-//	}
-//	catch(...)
-//	{
-//		throw  std::bad_alloc();
-//	}
-//}
-//
-//template <class T>
-//CMyArray<T>& CMyArray<T>::operator=(CMyArray const &rhs)//CMyArray rhs
-//{
-//	if (this != &rhs)
-//	{
-//		CMyArray copy(rhs);
-//		swap(m_array, copy.m_array);
-//		swap(m_size, copy.m_size);
-//		swap(m_realsize, copy.m_realsize);
-//	}
-//	return *this;
-//}
-//
-//template <class T>
-//CMyArray<T>& CMyArray<T>::operator=(CMyArray &&rhs)
-//{
-//	if (this != &rhs)
-//	{
-//		m_array = move(rhs.m_array);
-//		m_realsize = rhs.m_length;
-//		rhs.Clear();
-//	}
-//	return *this;
-//}
-//
-//
-template <class T>
-unsigned int CMyArray<T>::GetSize()
+template <typename T>
+CMyArray<T>::CMyArray(const CMyArray<T> & other) 
+	: m_size(other.m_size)
+	, m_array(std::make_unique<T[]>(m_size))
 {
-	return m_size; // simply return size 
+	memcpy(m_array.get(), other.m_array.get(), m_size * sizeof(m_size));
 }
 
-template <class T>
-void CMyArray<T>::Resize(size_t newSize)
-{
-	if (newSize != 0)
-	{
-		if ((m_size < newSize) || (m_size > newSize / 2))
-		{
-		
-			auto buffer = m_array.release();
-			m_array = make_unique<T[]>(newSize);
-			for (size_t i = 0; i < m_size - 1; ++i)
-			{
-				m_array[i] = buffer[i];
-			}
-			m_size = newSize;
-		}
-	}
-	else 
-	{
-		Clear();
-	}		
-}
-
-//template <class T>
-//void CMyArray<T>::Delete(unsigned int pos)
-//{
-//	if (m_size == 1) // If array has only one element  
-//		Clear(); // than we clear it, since it will be deleted  
-//	else
-//	{
-//		// otherwise, shift array elements  
-//		for (unsigned int i = pos; i<m_size - 1; i++)
-//			m_array[i] = m_array[i + 1];
-//
-//		// decrease array size 
-//		m_size--;
-//	}
-//}
-//
-template <class T>
-void CMyArray<T>::Clear() // clear array memory  
+template <typename T>
+void CMyArray<T>::Clear()
 {
 	m_size = 0;
 	m_array.reset();
 }
 
-template <class T>
-T& CMyArray<T>::operator [] (size_t index)
+template <typename T>
+void CMyArray<T>::Resize(size_t newSize)
 {
-	if (index > m_size)
+	if (m_size > newSize)
 	{
-		throw  std::out_of_range("index out of range");
+		m_size = newSize;
+		return;
 	}
-	//else if (!m_array)
-	//{
-	//	m_array = new T(0);
-	//	m_array[1] = '\0';
-	//}
+	if ((m_size < newSize) || (m_size > newSize / 2) && newSize != 0)
+	{
+			
+			std::unique_ptr<T[]> buffer;
+			m_array.swap(buffer);
+			m_array = std::make_unique<T[]>(newSize);
+			memcpy(m_array.get(), buffer.get(), (m_size) * sizeof(T));
+			m_size = newSize;
+	}
+	else 
+	{
+		Clear();
+	}
+}
+
+template <typename T>
+void CMyArray<T>::Resize(size_t newSize, T item)
+{
+	if (m_size > newSize)
+	{
+		m_size = newSize;
+		return;
+	}
+	if ((m_size < newSize) || (m_size > newSize / 2) && newSize != 0)
+	{
+
+			std::unique_ptr<T[]> buffer;
+			m_array.swap(buffer);
+			m_array = std::make_unique<T[]>(newSize);
+			memcpy(m_array.get(), buffer.get(), (m_size) * sizeof(T));
+			for (size_t i = m_size; i < newSize; ++i)
+			{
+				m_array[i] = item;
+			}
+			m_size = newSize;
+	}
+	else
+	{
+		Clear();
+	}
+
+}
+
+template <typename T>
+T & CMyArray<T>::operator[](size_t index)
+{
+	if (index < 0 || index >= m_size)
+	{
+		throw std::out_of_range("incorrect index");
+	}
 	return m_array[index];
 }
 
 template <class T>
 const T& CMyArray<T>::operator [] (size_t index) const
 {
-	if (index > m_size)
+	if (index < 0 || index >= m_size)
 	{
 		throw  std::out_of_range("index out of range");
 	}
-	//else if (!m_array)
-	//{
-	//	m_array = new T(0);
-	//	m_array[1] = '\0';
-	//}
 	return m_array[index];
 }
-//
-////template <class T>
-////T const& CMyArray<T>::operator[] const (size_t index)
-////{
-////	if (index > m_realsize)
-////	{
-////		throw  std::out_of_range("index out of range");
-////	}
-////	return m_array[index];
-////}
-//
+
+template <typename T>
+size_t CMyArray<T>::GetSize() const
+{
+	return m_size;
+}
+
+template <typename T>
+void CMyArray<T>::PushBack(const T & item)
+{
+	++m_size;
+	std::unique_ptr<T[]> buffer;
+	m_array.swap(buffer);
+	m_array = std::make_unique<T[]>(m_size);
+	memcpy(m_array.get(), buffer.get(), (m_size - 1) * sizeof(T));
+	m_array[m_size - 1] = item;
+}
 
 
+template <class T>
+CMyArray<T>& CMyArray<T>::operator=(CMyArray const &rhs)
+{
+	if (this != &rhs)
+	{
+		CMyArray copy(rhs);
+		swap(m_array, copy.m_array);
+		swap(m_size, copy.m_size);
+	}
+	return *this;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+template <class T>
+CMyArray<T>& CMyArray<T>::operator=(CMyArray &&rhs)
+{
+	if (this != &rhs)
+	{
+		swap(m_array, rhs.m_array);
+		swap(m_size, rhs.m_size);
+		rhs.m_size = 0;
+	}
+	return *this;
+}
